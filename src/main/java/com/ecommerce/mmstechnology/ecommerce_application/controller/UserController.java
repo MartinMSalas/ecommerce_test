@@ -1,12 +1,14 @@
 package com.ecommerce.mmstechnology.ecommerce_application.controller;
 
 
+import com.ecommerce.mmstechnology.ecommerce_application.dto.response.UserDtoResponse;
 import com.ecommerce.mmstechnology.ecommerce_application.exception.ResourceNotFoundException;
 import com.ecommerce.mmstechnology.ecommerce_application.model.User;
 import com.ecommerce.mmstechnology.ecommerce_application.service.IUserService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,7 +33,7 @@ public class UserController {
 	List<User> userArrayList = new ArrayList<>();
 
 	@GetMapping("/{id}")
-	public ResponseEntity<User> getUserById(@PathVariable int id) {
+	public ResponseEntity<UserDtoResponse> getUserById(@PathVariable int id) {
 		log.info("Fetching user with ID: {}", id);
 
 		return userService.getUserById(id)
@@ -47,13 +49,13 @@ public class UserController {
 
 
     @GetMapping("")
-	public List<User> getAllUsers(){
+	public ResponseEntity<List<UserDtoResponse>> getAllUsers(){
 
-		return userService.getAllUsers();
+		return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
 	}
 
 	@PostMapping("")
-	public ResponseEntity<User> createUser(@RequestBody User user){
+	public ResponseEntity<UserDtoResponse> createUser(@RequestBody UserDtoRequest user){
 		log.info("Creating user: {}", user);
 
 		return userService.createUser(user)
@@ -65,13 +67,5 @@ public class UserController {
 					log.warn("Failed to create user: {}", user);
 					return new ResourceNotFoundException("User not found with ID: " + user.getUserId());
 		});
-
-
-
-
 	}
-
-
-
-
 }
