@@ -91,12 +91,13 @@ public class UserService implements IUserService {
         int id = userList.size() + 1;
         user.setUserId(id);
 
-        userList.add(userMapper.toUser(user));
+        User userSaved = userMapper.toUser(user);
+        userList.add(userSaved);
 
-        log.info("User created {}", user);
+        log.info("User created {}", userSaved);
 
 
-        return Optional.of(userMapper.toDto(userMapper.toUser(user)));
+        return Optional.of(userMapper.toDto(userSaved));
     }
 
     private static boolean hasText(String s) {

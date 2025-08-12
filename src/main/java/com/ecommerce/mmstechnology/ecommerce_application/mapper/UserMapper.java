@@ -15,7 +15,7 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface UserMapper {
 
-	UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
+
 
 	UserDtoResponse toDto(User user);
 

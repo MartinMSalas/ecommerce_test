@@ -14,4 +14,6 @@ public interface IUserService {
 
     public Optional<UserDtoResponse> createUser(UserDtoRequest user);
 
+    public Optional<UserDtoResponse> updateUser(Integer id, UserDtoRequest userDtoRequest);
+
 }
