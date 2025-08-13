@@ -9,7 +9,7 @@ import lombok.Data;
  */
 @Data
 public class UserDtoResponse {
-	private Integer userId;
+	private Long userId;
 	private String firstName;
 	private String lastName;
 }

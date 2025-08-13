@@ -12,7 +12,7 @@ import lombok.Data;
 @Data
 public class UserDtoRequest {
 
-	private Integer userId;
+	private Long userId;
 	@NotBlank(message = "First name cannot be blank")
 	@Size(max = 50, message = "First name cannot exceed 50 characters")
 	private String firstName;
