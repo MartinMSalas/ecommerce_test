@@ -12,10 +12,10 @@ import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
+
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
+
 import org.springframework.web.bind.annotation.*;
 
 
@@ -40,7 +40,7 @@ public class UserController {
 	List<User> userArrayList = new ArrayList<>();
 
 	@GetMapping("/{id}")
-	public ResponseEntity<UserDtoResponse> getUserById(@PathVariable int id) {
+	public ResponseEntity<UserDtoResponse> getUserById(@PathVariable @Min(1) Long id) {
 		log.info("Fetching user with ID: {}", id);
 
 		return userService.getUserById(id)
@@ -82,14 +82,14 @@ public class UserController {
 			produces = MediaType.APPLICATION_JSON_VALUE
 	)
 	public ResponseEntity<UserDtoResponse> updateUser(
-			@PathVariable @Min(1) Integer id,
+			@PathVariable @Min(1) Long id,
 			@Valid @RequestBody UserDtoRequest userDtoRequest
 	) {
-		log.info("Updating user with id {}", id); // evita loguear el body completo
+		log.info("Updating user with id {}", id);
 
 		Optional<UserDtoResponse> updated = userService.updateUser(id, userDtoRequest);
 
-		return updated.map(ResponseEntity::ok)                // 200 OK con el recurso actualizado
-				.orElseGet(() -> ResponseEntity.notFound().build()); // 404 si no existe
+		return updated.map(ResponseEntity::ok)                // 200 OK
+				.orElseGet(() -> ResponseEntity.notFound().build()); // 404
 	}
 }

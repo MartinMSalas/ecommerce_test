@@ -8,15 +8,15 @@ import java.util.Optional;
 
 public interface IUserService {
 
-    public Optional<UserDtoResponse> getUserById(Integer id);
+    public Optional<UserDtoResponse> getUserById(Long id);
 
     public List<UserDtoResponse> getAllUsers();
 
     public Optional<UserDtoResponse> createUser(UserDtoRequest user);
 
-    public Optional<UserDtoResponse> updateUser(Integer id, UserDtoRequest user);
+    public Optional<UserDtoResponse> updateUser(Long id, UserDtoRequest user);
 
-    public Optional<UserDtoResponse> deleteUser(Integer id);
+    public Optional<UserDtoResponse> deleteUser(Long id);
 
-    public Optional<UserDtoResponse> patchUser(Integer id, UserDtoRequest userDtoRequest);
+    public Optional<UserDtoResponse> patchUser(Long id, UserDtoRequest userDtoRequest);
 }

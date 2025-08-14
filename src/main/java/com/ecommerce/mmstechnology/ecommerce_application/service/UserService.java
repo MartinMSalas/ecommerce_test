@@ -5,6 +5,7 @@ import com.ecommerce.mmstechnology.ecommerce_application.dto.response.UserDtoRes
 import com.ecommerce.mmstechnology.ecommerce_application.mapper.UserMapper;
 import com.ecommerce.mmstechnology.ecommerce_application.model.User;
 import com.ecommerce.mmstechnology.ecommerce_application.repository.UserRepository;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
@@ -19,9 +20,7 @@ import java.util.stream.IntStream;
 @Service
 public class UserService implements IUserService {
 
-    List<User> userList = new ArrayList<>();
     private final UserMapper userMapper;
-
     private final UserRepository userRepository;
 
 	public UserService(UserMapper userMapper, UserRepository userRepository) {
@@ -29,72 +28,44 @@ public class UserService implements IUserService {
         this.userRepository = userRepository;
     }
 
-	@Override
-    public Optional<UserDtoResponse> getUserById(Integer id) {
+    @Transactional(readOnly = true)
+    public Optional<UserDtoResponse> getUserById(Long id) {
         log.debug("Attempting to find user with ID: {}", id);
-//        Optional<User> foundUser = userList.stream()
-//                .filter(user -> Objects.equals(user.getUserId(), id))
-//                .findFirst();
 
-        Optional<User> foundUser = userRepository.findById(id);
-        if (foundUser.isPresent()) {
-            log.debug("User found: {}", foundUser.get());
-            return Optional.of(userMapper.toDto(foundUser.get()));
-        } else {
-            log.warn("User not found with ID: {}", id);
-            return Optional.empty();
-        }
+        return userRepository.findById(id)
+                .map(user -> {
+                    log.debug("User found: {}",user);
+                    return userMapper.toDto(user);
+                });
     }
-
-    public Optional<UserDtoResponse> updateUser(Integer id, UserDtoRequest userDtoRequest){
-
-        if (id == null) {
-            log.warn("Attempted to update a user with null id");
-            return Optional.empty();
-        }
-        // Find index by id (null-safe comparison)
-
+    @Transactional()
+    public Optional<UserDtoResponse> updateUser(Long id, UserDtoRequest userDtoRequest) {
         log.debug("Attempting to update user with ID: {}", id);
-        Optional<User> foundUser = userRepository.findByUserId(id);
-
-        if (foundUser.isEmpty()) {
-            log.warn("User not found with ID: {}", id);
-            return Optional.empty();
-        }
-
-
-        User oldUser = foundUser.get();
-        userDtoRequest.setUserId(oldUser.getUserId());
-        User user = userMapper.toUser(userDtoRequest);
-        int linesUpdated = userRepository.updateUserById(user.getUserId(), user.getFirstName(), user.getLastName());
-
-
-        if(linesUpdated > 0){
-            Optional<User> userSaved = userRepository.findByUserId(user.getUserId());
-            return Optional.of(userMapper.toDto(userSaved.get()));
-        }
-        return Optional.empty();
-
+        return getUserById(id).map(
+                existingUser -> {
+                    userDtoRequest.setUserId(id);
+                    User userSaved = userRepository.save(userMapper.toUser(userDtoRequest));
+                    log.debug("Updated User: {}" , userSaved);
+                    return userMapper.toDto(userSaved);
+                }
+        );
     }
 
-    @Override
-    public Optional<UserDtoResponse> deleteUser(Integer id) {
+
+
+    public Optional<UserDtoResponse> deleteUser(Long id) {
         log.debug("Attempting to delete user with ID: {}", id);
-        Optional<User> user = userRepository.findById(id);
 
-        if (!user.isPresent()) {
-            log.warn("User not found with ID: {}", id);
-            return Optional.empty();
-        }
-        userRepository.deleteById(id);
-        log.debug("User deleted with ID: {}", id);
-
-
-        return Optional.of(userMapper.toDto(user.get()));
+        return getUserById(id)
+                .map(user -> {
+                    userRepository.deleteById(id);
+                    log.debug("User with id {} deleted", id);
+                    return user;
+                });
     }
 
     @Override
-    public Optional<UserDtoResponse> patchUser(Integer id, UserDtoRequest userDtoRequest) {
+    public Optional<UserDtoResponse> patchUser(Long id, UserDtoRequest userDtoRequest) {
         if (id == null) {
             log.warn("Attempted to update a user with null id");
             return Optional.empty();
