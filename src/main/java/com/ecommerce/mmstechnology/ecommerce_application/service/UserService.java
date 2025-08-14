@@ -28,71 +28,81 @@ public class UserService implements IUserService {
         this.userRepository = userRepository;
     }
 
-    @Transactional(readOnly = true)
-    public Optional<UserDtoResponse> getUserById(Long id) {
+    private Optional<User> getUserByIdFromRepo(Long id){
         log.debug("Attempting to find user with ID: {}", id);
 
         return userRepository.findById(id)
                 .map(user -> {
                     log.debug("User found: {}",user);
-                    return userMapper.toDto(user);
+                    return user;
                 });
+
+    }
+
+    private Optional<User> saveUserToRepo(User user){
+        log.debug("Saving user to database");
+        User userSaved = userRepository.save(user);
+        log.debug("User saved: {}",userSaved);
+        return Optional.of(userSaved);
+    }
+
+
+    @Transactional(readOnly = true)
+    public Optional<UserDtoResponse> getUserById(Long id) {
+
+        return getUserByIdFromRepo(id)
+                .map(userMapper::toDto);
+
     }
     @Transactional()
     public Optional<UserDtoResponse> updateUser(Long id, UserDtoRequest userDtoRequest) {
         log.debug("Attempting to update user with ID: {}", id);
-        return getUserById(id).map(
-                existingUser -> {
+        return getUserByIdFromRepo(id)
+                .map(user -> {
                     userDtoRequest.setUserId(id);
-                    User userSaved = userRepository.save(userMapper.toUser(userDtoRequest));
-                    log.debug("Updated User: {}" , userSaved);
-                    return userMapper.toDto(userSaved);
-                }
-        );
+                    saveUserToRepo(userMapper.toUser(userDtoRequest))
+                            .map({ user2 ->
+                                    return userMapper.toDto(user2);
+
+                    });
+                    return null;
+                });
+
+
     }
 
 
-
+    @Transactional()
     public Optional<UserDtoResponse> deleteUser(Long id) {
         log.debug("Attempting to delete user with ID: {}", id);
 
-        return getUserById(id)
+        return getUserByIdFromRepo(id)
                 .map(user -> {
                     userRepository.deleteById(id);
                     log.debug("User with id {} deleted", id);
-                    return user;
+                    return userMapper.toDto(user);
                 });
     }
 
-    @Override
+
+
+    @Transactional
     public Optional<UserDtoResponse> patchUser(Long id, UserDtoRequest userDtoRequest) {
-        if (id == null) {
-            log.warn("Attempted to update a user with null id");
-            return Optional.empty();
-        }
 
-        log.debug("Attempting to patch user with ID: {}",id);
-        Optional<User> userSaved = userRepository.findByUserId(id);
+       log.debug("Attempting to patch user with ID: {}",id);
 
-        if(userSaved.isEmpty()){
-            log.warn("User not found with ID: {}", id);
-            return Optional.empty();
-        }
-        User user = userSaved.get();
-        if(hasText(userDtoRequest.getFirstName())){
-            user.setFirstName(userDtoRequest.getFirstName());
-        }
-        if(hasText(userDtoRequest.getLastName())){
-            user.setLastName(userDtoRequest.getLastName());
-        }
-        int linesUpdated = userRepository.updateUserById(user.getUserId(), user.getFirstName(), user.getLastName());
-
-        if(linesUpdated > 0){
-
-            return Optional.of(userMapper.toDto(user));
-        }
-        return Optional.empty();
-
+       return getUserByIdFromRepo(id)
+               .map(user -> {
+                  if(userDtoRequest.getFirstName() != null){
+                      user.setFirstName(userDtoRequest.getFirstName());
+                  }
+                  if(userDtoRequest.getLastName() != null){
+                      user.setLastName(userDtoRequest.getLastName());
+                  }
+                   User userSaved = userRepository.save(userMapper.toUser(userDtoRequest));
+                   log.debug("User saved: {}",userSaved);
+                   return userMapper.toDto(userSaved);
+               });
     }
 
     public List<UserDtoResponse> getAllUsers(){
