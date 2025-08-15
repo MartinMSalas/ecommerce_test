@@ -12,15 +12,6 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    //Optional<User> findById(Long id);
-
-    @Modifying
-    @Transactional
-    @Query("UPDATE user_table u SET u.firstName = :firstName,  u.lastName = :lastName WHERE u.userId = :userId")
-    int updateUserById(@Param("userId") Long userId,
-                       @Param("firstName") String firstName,
-                       @Param("lastName") String lastName);
-
 
 
 
