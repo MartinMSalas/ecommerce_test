@@ -1,5 +1,7 @@
 package com.ecommerce.mmstechnology.ecommerce_application.dto.request;
 
+import com.ecommerce.mmstechnology.ecommerce_application.dto.AddressDto;
+import com.ecommerce.mmstechnology.ecommerce_application.model.UserRole;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
@@ -12,9 +14,13 @@ import lombok.Data;
 @Data
 public class UserDtoRequest {
 
+
 	private Long userId;
-	@NotBlank(message = "First name cannot be blank")
-	@Size(max = 50, message = "First name cannot exceed 50 characters")
 	private String firstName;
 	private String lastName;
+
+	private String email;
+	private Long phoneNumber;
+
+	private AddressDto addressDto;
 }

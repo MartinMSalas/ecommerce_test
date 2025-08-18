@@ -149,10 +149,12 @@ public class UserService implements IUserService {
     public Optional<UserDtoResponse> createUser(UserDtoRequest userDtoRequest){
 		log.debug("Attempting to create the user: {}", userDtoRequest);
 
-        User userSaved = userRepository.save(userMapper.toUser(userDtoRequest));
-
-        log.info("User created {}", userSaved);
-        return Optional.of(userMapper.toDto(userSaved));
+        Optional<User> userSaved = saveUserToRepo(userMapper.toUser(userDtoRequest));
+        if(userSaved.isEmpty()){
+            return Optional.empty();
+        }
+        log.info("User created {}", userSaved.get());
+        return Optional.of(userMapper.toDto(userSaved.get()));
 
     }
 
