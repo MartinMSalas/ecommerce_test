@@ -1,9 +1,6 @@
 package com.ecommerce.mmstechnology.ecommerce_application.dto.request;
 
 import com.ecommerce.mmstechnology.ecommerce_application.dto.AddressDto;
-import com.ecommerce.mmstechnology.ecommerce_application.model.UserRole;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 /*
@@ -12,7 +9,7 @@ import lombok.Data;
  * © 2025 mmstechnology
  */
 @Data
-public class UserDtoRequest {
+public class UserRequestDto {
 
 
 	private Long userId;

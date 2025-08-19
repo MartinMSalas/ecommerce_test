@@ -1,7 +1,7 @@
 package com.ecommerce.mmstechnology.ecommerce_application.service;
 
-import com.ecommerce.mmstechnology.ecommerce_application.dto.request.UserDtoRequest;
-import com.ecommerce.mmstechnology.ecommerce_application.dto.response.UserDtoResponse;
+import com.ecommerce.mmstechnology.ecommerce_application.dto.request.UserRequestDto;
+import com.ecommerce.mmstechnology.ecommerce_application.dto.response.UserResponseDto;
 import com.ecommerce.mmstechnology.ecommerce_application.mapper.UserMapper;
 import com.ecommerce.mmstechnology.ecommerce_application.model.User;
 import com.ecommerce.mmstechnology.ecommerce_application.repository.UserRepository;
@@ -54,7 +54,7 @@ public class UserService implements IUserService {
      * @param id the user ID
      * @return Optional containing UserDtoResponse if found, empty otherwise
      */
-    public Optional<UserDtoResponse> getUserById(Long id) {
+    public Optional<UserResponseDto> getUserById(Long id) {
 
         return getUserByIdFromRepo(id)
                 .map(userMapper::toDto);
@@ -64,18 +64,18 @@ public class UserService implements IUserService {
     /**
      * Updates an existing user (full update)
      * @param id the user ID
-     * @param userDtoRequest the updated user data
+     * @param userRequestDto the updated user data
      * @return Optional containing updated UserDtoResponse, empty if user not found or update failed
      */
     @Transactional()
-    public Optional<UserDtoResponse> updateUser(Long id, UserDtoRequest userDtoRequest) {
+    public Optional<UserResponseDto> updateUser(Long id, UserRequestDto userRequestDto) {
         log.debug("Attempting to update user with ID: {}", id);
 
         if(getUserByIdFromRepo(id).isEmpty()){
             return Optional.empty();
         }
-        userDtoRequest.setUserId(id);
-        return saveUserToRepo(userMapper.toUser(userDtoRequest))
+        userRequestDto.setUserId(id);
+        return saveUserToRepo(userMapper.toUser(userRequestDto))
                 .map(user -> {
                     log.debug("User updated {}",user);
                     return userMapper.toDto(user);
@@ -90,7 +90,7 @@ public class UserService implements IUserService {
      * @return Optional containing deleted UserDtoResponse, empty if user not found
      */
     @Transactional()
-    public Optional<UserDtoResponse> deleteUser(Long id) {
+    public Optional<UserResponseDto> deleteUser(Long id) {
         log.debug("Attempting to delete user with ID: {}", id);
 
         return getUserByIdFromRepo(id)
@@ -105,11 +105,11 @@ public class UserService implements IUserService {
     /**
      * Partially updates an existing user
      * @param id the user ID
-     * @param userDtoRequest the partial user data
+     * @param userRequestDto the partial user data
      * @return Optional containing updated UserDtoResponse, empty if user not found or update failed
      */
     @Transactional
-    public Optional<UserDtoResponse> patchUser(Long id, UserDtoRequest userDtoRequest) {
+    public Optional<UserResponseDto> patchUser(Long id, UserRequestDto userRequestDto) {
 
         log.debug("Attempting to patch user with ID: {}",id);
 
@@ -120,11 +120,11 @@ public class UserService implements IUserService {
         }
         User userToUpdate = user.get();
 
-        if(hasText(userDtoRequest.getFirstName())){
-            userToUpdate.setFirstName(userDtoRequest.getFirstName());
+        if(hasText(userRequestDto.getFirstName())){
+            userToUpdate.setFirstName(userRequestDto.getFirstName());
         }
-        if(hasText(userDtoRequest.getLastName())){
-            userToUpdate.setLastName(userDtoRequest.getLastName());
+        if(hasText(userRequestDto.getLastName())){
+            userToUpdate.setLastName(userRequestDto.getLastName());
         }
         return saveUserToRepo(userToUpdate)
                 .map(userPatched -> {
@@ -136,20 +136,20 @@ public class UserService implements IUserService {
      * Retrieves all users
      * @return List of UserDtoResponse (never null, but may be empty)
      */
-    public List<UserDtoResponse> getAllUsers(){
+    public List<UserResponseDto> getAllUsers(){
         log.debug("Attempting to retrieve all users");
 
         return userMapper.toDtoList(userRepository.findAll());
     }
     /**
      * Creates a new user
-     * @param userDtoRequest the user data
+     * @param userRequestDto the user data
      * @return Optional containing created UserDtoResponse, empty if creation failed
      */
-    public Optional<UserDtoResponse> createUser(UserDtoRequest userDtoRequest){
-		log.debug("Attempting to create the user: {}", userDtoRequest);
+    public Optional<UserResponseDto> createUser(UserRequestDto userRequestDto){
+		log.debug("Attempting to create the user: {}", userRequestDto);
 
-        Optional<User> userSaved = saveUserToRepo(userMapper.toUser(userDtoRequest));
+        Optional<User> userSaved = saveUserToRepo(userMapper.toUser(userRequestDto));
         if(userSaved.isEmpty()){
             return Optional.empty();
         }

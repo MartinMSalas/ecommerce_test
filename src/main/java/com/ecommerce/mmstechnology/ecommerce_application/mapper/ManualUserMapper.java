@@ -1,10 +1,9 @@
 package com.ecommerce.mmstechnology.ecommerce_application.mapper;
 
 import com.ecommerce.mmstechnology.ecommerce_application.dto.AddressDto;
-import com.ecommerce.mmstechnology.ecommerce_application.dto.response.UserDtoResponse;
+import com.ecommerce.mmstechnology.ecommerce_application.dto.response.UserResponseDto;
 import com.ecommerce.mmstechnology.ecommerce_application.model.Address;
 import com.ecommerce.mmstechnology.ecommerce_application.model.User;
-import com.ecommerce.mmstechnology.ecommerce_application.model.UserRole;
 
 /*
  * ManualUserMapper.java
@@ -13,18 +12,18 @@ import com.ecommerce.mmstechnology.ecommerce_application.model.UserRole;
  */
 public class ManualUserMapper {
 
-    public static UserDtoResponse userDtoResponse(User user){
-        UserDtoResponse userDtoResponse = new UserDtoResponse();
+    public static UserResponseDto userDtoResponse(User user){
+        UserResponseDto userResponseDto = new UserResponseDto();
         if(user.getUserId() != null)
-            userDtoResponse.setUserId(user.getUserId());
+            userResponseDto.setUserId(user.getUserId());
         if(user.getFirstName() != null) 
-            userDtoResponse.setFirstName(user.getFirstName());
+            userResponseDto.setFirstName(user.getFirstName());
         if(user.getLastName() != null)
-            userDtoResponse.setLastName(user.getLastName());
+            userResponseDto.setLastName(user.getLastName());
         if(user.getEmail() != null)
-            userDtoResponse.setEmail(user.getEmail());
+            userResponseDto.setEmail(user.getEmail());
         if(user.getUserRole() != null)
-            userDtoResponse.setUserRole(user.getUserRole());
+            userResponseDto.setUserRole(user.getUserRole());
         if(user.getAddress() != null){
             AddressDto addressDto = new AddressDto();
             Address address = user.getAddress();
@@ -39,9 +38,9 @@ public class ManualUserMapper {
             if(address.getZipCode() != null)
                 addressDto.setZipCode(address.getZipCode());
 
-            userDtoResponse.setAddressDto(addressDto);
+            userResponseDto.setAddressDto(addressDto);
         }
-        return userDtoResponse;
+        return userResponseDto;
           
     }
 }

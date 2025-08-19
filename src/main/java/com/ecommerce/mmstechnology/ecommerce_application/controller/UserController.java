@@ -1,8 +1,8 @@
 package com.ecommerce.mmstechnology.ecommerce_application.controller;
 
 
-import com.ecommerce.mmstechnology.ecommerce_application.dto.request.UserDtoRequest;
-import com.ecommerce.mmstechnology.ecommerce_application.dto.response.UserDtoResponse;
+import com.ecommerce.mmstechnology.ecommerce_application.dto.request.UserRequestDto;
+import com.ecommerce.mmstechnology.ecommerce_application.dto.response.UserResponseDto;
 import com.ecommerce.mmstechnology.ecommerce_application.exception.ResourceNotFoundException;
 import com.ecommerce.mmstechnology.ecommerce_application.model.User;
 import com.ecommerce.mmstechnology.ecommerce_application.service.IUserService;
@@ -30,7 +30,7 @@ import java.util.Optional;
  * © 2025 mmstechnology
  */
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/v1/user")
 @RequiredArgsConstructor
 @Slf4j
 public class UserController {
@@ -40,7 +40,7 @@ public class UserController {
 	List<User> userArrayList = new ArrayList<>();
 
 	@GetMapping("/{id}")
-	public ResponseEntity<UserDtoResponse> getUserById(@PathVariable @Min(1) Long id) {
+	public ResponseEntity<UserResponseDto> getUserById(@PathVariable @Min(1) Long id) {
 		log.info("Fetching user with ID: {}", id);
 
 		return userService.getUserById(id)
@@ -56,13 +56,13 @@ public class UserController {
 
 
     @GetMapping("")
-	public ResponseEntity<List<UserDtoResponse>> getAllUsers(){
+	public ResponseEntity<List<UserResponseDto>> getAllUsers(){
 
 		return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
 	}
 
 	@PostMapping("")
-	public ResponseEntity<UserDtoResponse> createUser(@RequestBody UserDtoRequest user){
+	public ResponseEntity<UserResponseDto> createUser(@RequestBody UserRequestDto user){
 		log.info("Creating user: {}", user);
 
 		return userService.createUser(user)
@@ -81,13 +81,13 @@ public class UserController {
 			consumes = MediaType.APPLICATION_JSON_VALUE,
 			produces = MediaType.APPLICATION_JSON_VALUE
 	)
-	public ResponseEntity<UserDtoResponse> updateUser(
+	public ResponseEntity<UserResponseDto> updateUser(
 			@PathVariable @Min(1) Long id,
-			@Valid @RequestBody UserDtoRequest userDtoRequest
+			@Valid @RequestBody UserRequestDto userRequestDto
 	) {
 		log.info("Updating user with id {}", id);
 
-		Optional<UserDtoResponse> updated = userService.updateUser(id, userDtoRequest);
+		Optional<UserResponseDto> updated = userService.updateUser(id, userRequestDto);
 
 		return updated.map(ResponseEntity::ok)                // 200 OK
 				.orElseGet(() -> ResponseEntity.notFound().build()); // 404

@@ -1,22 +1,21 @@
 package com.ecommerce.mmstechnology.ecommerce_application.service;
-import com.ecommerce.mmstechnology.ecommerce_application.dto.request.UserDtoRequest;
-import com.ecommerce.mmstechnology.ecommerce_application.dto.response.UserDtoResponse;
-import com.ecommerce.mmstechnology.ecommerce_application.model.User;
+import com.ecommerce.mmstechnology.ecommerce_application.dto.request.UserRequestDto;
+import com.ecommerce.mmstechnology.ecommerce_application.dto.response.UserResponseDto;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface IUserService {
 
-    public Optional<UserDtoResponse> getUserById(Long id);
+    public Optional<UserResponseDto> getUserById(Long id);
 
-    public List<UserDtoResponse> getAllUsers();
+    public List<UserResponseDto> getAllUsers();
 
-    public Optional<UserDtoResponse> createUser(UserDtoRequest user);
+    public Optional<UserResponseDto> createUser(UserRequestDto user);
 
-    public Optional<UserDtoResponse> updateUser(Long id, UserDtoRequest user);
+    public Optional<UserResponseDto> updateUser(Long id, UserRequestDto user);
 
-    public Optional<UserDtoResponse> deleteUser(Long id);
+    public Optional<UserResponseDto> deleteUser(Long id);
 
-    public Optional<UserDtoResponse> patchUser(Long id, UserDtoRequest userDtoRequest);
+    public Optional<UserResponseDto> patchUser(Long id, UserRequestDto userRequestDto);
 }

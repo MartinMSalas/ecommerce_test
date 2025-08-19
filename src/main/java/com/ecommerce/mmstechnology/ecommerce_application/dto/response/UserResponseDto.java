@@ -2,9 +2,6 @@ package com.ecommerce.mmstechnology.ecommerce_application.dto.response;
 
 import com.ecommerce.mmstechnology.ecommerce_application.dto.AddressDto;
 import com.ecommerce.mmstechnology.ecommerce_application.model.UserRole;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import lombok.Data;
 
 /*
@@ -13,7 +10,7 @@ import lombok.Data;
  * © 2025 mmstechnology
  */
 @Data
-public class UserDtoResponse {
+public class UserResponseDto {
 
 
 	private Long userId;

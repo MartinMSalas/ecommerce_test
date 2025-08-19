@@ -1,0 +1,69 @@
+package com.ecommerce.mmstechnology.ecommerce_application.controller;
+
+import com.ecommerce.mmstechnology.ecommerce_application.dto.request.ProductRequestDto;
+import com.ecommerce.mmstechnology.ecommerce_application.dto.response.ProductResponseDto;
+import com.ecommerce.mmstechnology.ecommerce_application.exception.ResourceNotFoundException;
+import com.ecommerce.mmstechnology.ecommerce_application.service.IProductService;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+/*
+ * ProductController.java
+ * Project: ecommerce-application, Created by M on 18/8/2025.
+ * © 2025 mmstechnology
+ */
+@RestController
+@RequestMapping("/api/v1/product")
+@AllArgsConstructor
+@Slf4j
+public class ProductController {
+
+	final IProductService productService;
+
+	@GetMapping
+	public ResponseEntity<List<ProductResponseDto>> getAllProducts(){
+		log.debug("Getting all products");
+
+		return new ResponseEntity<>(productService.getAllProducts(), HttpStatus.OK);
+	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<ProductResponseDto> getProductById(@PathVariable(name="id")  @Min(1) Long id){
+		log.debug("Attempting to get product with id: {}",id);
+
+
+		return productService.getProductById(id).map(productDto ->{
+				log.debug("Product Dto Response found {}",productDto);
+				return new ResponseEntity<>(productDto,HttpStatus.OK);
+			}).orElseThrow(() -> {
+				log.warn("Product with ID {} not found", id);
+				return new ResourceNotFoundException("User not found with ID: " + id);
+			});
+	}
+
+	@PostMapping()
+	public ResponseEntity<ProductResponseDto> createProduct(@RequestBody @Valid ProductRequestDto productRequestDto){
+		log.debug("Attempting to create product: {}", productRequestDto);
+
+		return productService.createProduct(productRequestDto)
+				.map(productResponseDto -> {
+					log.debug("Product created with id: {}", productResponseDto.getProductId());
+					return new ResponseEntity<>(productResponseDto,HttpStatus.CREATED);
+				}).orElseThrow(()-> {
+							log.warn("Product creation failed for request: {}", productRequestDto);
+							return new ProductCreationException("Unable to create the product.");
+						}
+
+				);
+	}
+
+
+
+}
