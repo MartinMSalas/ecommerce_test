@@ -4,6 +4,7 @@ import com.ecommerce.mmstechnology.ecommerce_application.dto.request.ProductRequ
 import com.ecommerce.mmstechnology.ecommerce_application.dto.response.ProductResponseDto;
 import com.ecommerce.mmstechnology.ecommerce_application.exception.ResourceNotFoundException;
 import com.ecommerce.mmstechnology.ecommerce_application.service.IProductService;
+import com.ecommerce.mmstechnology.ecommerce_application.exception.ProductCreationException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
@@ -29,14 +30,14 @@ public class ProductController {
 
 	@GetMapping
 	public ResponseEntity<List<ProductResponseDto>> getAllProducts(){
-		log.debug("Getting all products");
+		log.debug("Request for getting all products");
 
 		return new ResponseEntity<>(productService.getAllProducts(), HttpStatus.OK);
 	}
 
 	@GetMapping("/{id}")
 	public ResponseEntity<ProductResponseDto> getProductById(@PathVariable(name="id")  @Min(1) Long id){
-		log.debug("Attempting to get product with id: {}",id);
+		log.debug("Request for get product with id: {}",id);
 
 
 		return productService.getProductById(id).map(productDto ->{
@@ -50,8 +51,8 @@ public class ProductController {
 
 	@PostMapping()
 	public ResponseEntity<ProductResponseDto> createProduct(@RequestBody @Valid ProductRequestDto productRequestDto){
-		log.debug("Attempting to create product: {}", productRequestDto);
-
+		log.debug("Request for create product: {}", productRequestDto);
+//		throw new ProductCreationException("Unable to create product");
 		return productService.createProduct(productRequestDto)
 				.map(productResponseDto -> {
 					log.debug("Product created with id: {}", productResponseDto.getProductId());
