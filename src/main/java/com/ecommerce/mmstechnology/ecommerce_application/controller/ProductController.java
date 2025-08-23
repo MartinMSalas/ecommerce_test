@@ -30,14 +30,14 @@ public class ProductController {
 
 	@GetMapping
 	public ResponseEntity<List<ProductResponseDto>> getAllProducts(){
-		log.debug("Request for getting all products");
+		log.info("Request for getting all products");
 
 		return new ResponseEntity<>(productService.getAllProducts(), HttpStatus.OK);
 	}
 
 	@GetMapping("/{id}")
 	public ResponseEntity<ProductResponseDto> getProductById(@PathVariable(name="id")  @Min(1) Long id){
-		log.debug("Request for get product with id: {}",id);
+		log.info("Request for get product with id: {}",id);
 
 
 		return productService.getProductById(id).map(productDto ->{
@@ -45,13 +45,13 @@ public class ProductController {
 				return new ResponseEntity<>(productDto,HttpStatus.OK);
 			}).orElseThrow(() -> {
 				log.warn("Product with ID {} not found", id);
-				return new ResourceNotFoundException("User not found with ID: " + id);
+				return new ResourceNotFoundException("Product not found with ID: " + id);
 			});
 	}
 
 	@PostMapping()
 	public ResponseEntity<ProductResponseDto> createProduct(@RequestBody @Valid ProductRequestDto productRequestDto){
-		log.debug("Request for create product: {}", productRequestDto);
+		log.info("Request for create product: {}", productRequestDto);
 //		throw new ProductCreationException("Unable to create product");
 		return productService.createProduct(productRequestDto)
 				.map(productResponseDto -> {
@@ -65,6 +65,22 @@ public class ProductController {
 				);
 	}
 
+	@DeleteMapping("/{productId}")
+	public ResponseEntity<ProductResponseDto> deleteProductById(@PathVariable(name = "productId") @Min(1) Long productId){
+		log.info("Request to delete Product with id: {}",productId);
+
+		return productService.deleteProduct(productId)
+				.map(productResponseDto->{
+					log.debug("Product deleted sending response entity");
+					return new ResponseEntity<>(productResponseDto,HttpStatus.OK);
+				})
+				.orElseThrow(()->{
+					log.warn("Product with ID {} not found", productId);
+					return new ResourceNotFoundException("Product not found with ID: {}" + productId);
+				}
+				);
+
+	}
 
 
 }

@@ -1,9 +1,21 @@
 package com.ecommerce.mmstechnology.ecommerce_application.dto.request;
 
+import java.math.BigDecimal;
+
 /*
  * ProductDtoRequest.java
  * Project: ecommerce-application, Created by M on 18/8/2025.
  * © 2025 mmstechnology
  */
 public class ProductRequestDto {
+
+	private Long productId;
+
+	private String name;
+	private String description;
+	private BigDecimal price;
+	private Integer stockQuantity;
+	private String category;
+	private String imageUrl;
+	private Boolean active = true;
 }

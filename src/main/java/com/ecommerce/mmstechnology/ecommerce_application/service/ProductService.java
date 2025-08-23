@@ -4,6 +4,9 @@ import com.ecommerce.mmstechnology.ecommerce_application.dto.request.ProductRequ
 import com.ecommerce.mmstechnology.ecommerce_application.dto.request.UserRequestDto;
 import com.ecommerce.mmstechnology.ecommerce_application.dto.response.ProductResponseDto;
 import com.ecommerce.mmstechnology.ecommerce_application.dto.response.UserResponseDto;
+import com.ecommerce.mmstechnology.ecommerce_application.mapper.ProductMapper;
+import com.ecommerce.mmstechnology.ecommerce_application.model.Product;
+import com.ecommerce.mmstechnology.ecommerce_application.model.User;
 import com.ecommerce.mmstechnology.ecommerce_application.repository.ProductRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,14 +28,39 @@ public class ProductService implements IProductService {
 
 
 	private final ProductRepository productRepository;
+	private final ProductMapper productMapper;
 
 
+	private Optional<Product> getProductByIdFromRepository(Long productId){
+		log.debug("Attempting to find product in the repository with id: {}", productId);
+
+		return productRepository.findById(productId)
+				.map(product -> {
+					log.debug("Product found: {}",product);
+					return product;
+				});
+
+	}
+
+	private Optional<Product> saveProductToRepository(Product product){
+		log.debug("Saving product to database");
+
+		return Optional.of(productRepository.save(product))
+				.map(productSaved -> {
+					log.debug("Product saved: {}",productSaved);
+					return productSaved;
+				});
+
+
+	}
 	@Override
 	public Optional<ProductResponseDto> getProductById(Long id) {
 
 		log.debug("Attempting to retrieve Product by id: {}",id);
 
-		return Optional.empty();
+		return getProductByIdFromRepository(id)
+				.map(productMapper::toDto);
+
 	}
 
 
@@ -40,7 +68,8 @@ public class ProductService implements IProductService {
 	@Override
 	public List<ProductResponseDto> getAllProducts() {
 		log.debug("Getting all Products");
-		return List.of();
+
+		return productRepository.findAll();
 	}
 
 	@Override
