@@ -149,13 +149,11 @@ public class UserService implements IUserService {
     public Optional<UserResponseDto> createUser(UserRequestDto userRequestDto){
 		log.debug("Attempting to create the user: {}", userRequestDto);
 
-        Optional<User> userSaved = saveUserToRepo(userMapper.toUser(userRequestDto));
-        if(userSaved.isEmpty()){
-            return Optional.empty();
-        }
-        log.info("User created {}", userSaved.get());
-        return Optional.of(userMapper.toDto(userSaved.get()));
-
+        return saveUserToRepo(userMapper.toUser(userRequestDto))
+                .map(user -> {
+                    log.debug("User saved: {}", user);
+                    return userMapper.toDto(user);
+                });
     }
 
     private static boolean hasText(String s) {

@@ -47,7 +47,7 @@ public class ProductService implements IProductService {
 
 		return Optional.of(productRepository.save(product))
 				.map(productSaved -> {
-					log.debug("Product saved: {}",productSaved);
+					log.debug("Product saved in the repository: {}",productSaved);
 					return productSaved;
 				});
 
@@ -69,19 +69,24 @@ public class ProductService implements IProductService {
 	public List<ProductResponseDto> getAllProducts() {
 		log.debug("Getting all Products");
 
-		return productRepository.findAll();
+		return productMapper.toDtoList(productRepository.findAll());
 	}
 
 	@Override
 	public Optional<ProductResponseDto> createProduct(ProductRequestDto productRequestDto) {
 		log.debug("Attempting to create Product: {}", productRequestDto);
+		return saveProductToRepository(productMapper.toProduct(productRequestDto))
+				.map(product -> {
+					log.debug("Product saved: {}", product);
+					return productMapper.toDto(product);
+				});
 
-		return Optional.empty();
 	}
 
 	@Override
 	public Optional<ProductResponseDto> updateProduct(Long id, ProductRequestDto user) {
 		log.debug("Attempting to update Product with id {}", id);
+
 		return Optional.empty();
 	}
 

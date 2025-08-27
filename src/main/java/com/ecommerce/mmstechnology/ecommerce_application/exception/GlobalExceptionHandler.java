@@ -22,9 +22,16 @@ public class GlobalExceptionHandler extends RuntimeException {
     }
 
     @ExceptionHandler(ProductCreationException.class)
-    public ResponseEntity<String> handleCreationError(ProductCreationException ex){
-        log.info("In handle creation error");
+    public ResponseEntity<String> handleProductCreationError(ProductCreationException ex){
+        log.debug("In handle creation error");
         return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(ex.getMessage());
     }
+
+    @ExceptionHandler(ProductNotFoundException.class)
+    public ResponseEntity<String> handleProductNotFound(ProductNotFoundException ex){
+        log.debug("Handle Product not found exception");
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
 
 }
