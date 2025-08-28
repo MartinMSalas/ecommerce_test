@@ -82,5 +82,20 @@ public class ProductController {
 
 	}
 
+	@PatchMapping("/{productId}")
+	public ResponseEntity<ProductResponseDto> patchProductById(@PathVariable(name="productId") @Min(1) Long productId, @RequestBody ProductRequestDto productRequestDto){
+		log.info("Request to patch Product with id: {}", productId);
+
+		return productService.patchProduct(productId, productRequestDto)
+				.map(productResponseDto -> {
+					log.debug("Product patched {}",productResponseDto);
+					return new ResponseEntity<>(productResponseDto, HttpStatus.OK);
+				})
+				.orElseThrow(() -> {
+
+					return new ResourceNotFoundException("Product not found with ID: {}" + productId);
+				});
+	}
+
 
 }
