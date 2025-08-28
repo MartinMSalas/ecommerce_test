@@ -1,5 +1,7 @@
 package com.ecommerce.mmstechnology.ecommerce_application.dto.request;
 
+import lombok.Data;
+
 import java.math.BigDecimal;
 
 /*
@@ -7,6 +9,7 @@ import java.math.BigDecimal;
  * Project: ecommerce-application, Created by M on 18/8/2025.
  * © 2025 mmstechnology
  */
+@Data
 public class ProductRequestDto {
 
 	private Long productId;

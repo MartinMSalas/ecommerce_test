@@ -32,7 +32,7 @@ public class UserService implements IUserService {
 
         return userRepository.findById(id)
                 .map(user -> {
-                    log.debug("User found: {}",user);
+                    log.debug("User found in Repository: {}",user);
                     return user;
                 });
 
@@ -44,7 +44,7 @@ public class UserService implements IUserService {
     private Optional<User> saveUserToRepo(User user){
         log.debug("Saving user to database");
         User userSaved = userRepository.save(user);
-        log.debug("User saved: {}",userSaved);
+        log.debug("User saved in Repository: {}",userSaved);
         return Optional.of(userSaved);
     }
 

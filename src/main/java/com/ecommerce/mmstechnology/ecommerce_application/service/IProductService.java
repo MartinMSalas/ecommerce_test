@@ -25,6 +25,6 @@ public interface IProductService {
 
 	public Optional<ProductResponseDto> deleteProduct(Long id);
 
-	public Optional<UserResponseDto> patchProduct(Long id, UserRequestDto userRequestDto);
+	public Optional<ProductResponseDto> patchProduct(Long id, ProductRequestDto productRequestDto);
 
 }

@@ -42,17 +42,17 @@ public class ProductService implements IProductService {
 
 	}
 
-	private Optional<Product> saveProductToRepository(Product product){
-		log.debug("Saving product to database");
-
-		return Optional.of(productRepository.save(product))
-				.map(productSaved -> {
-					log.debug("Product saved in the repository: {}",productSaved);
-					return productSaved;
-				});
-
-
-	}
+	private Optional<Product> saveProductToRepository(Product product) {
+        log.debug("Saving product to database");
+        try {
+            Product savedProduct = productRepository.save(product);
+            log.debug("Product saved in the repository: {}", savedProduct);
+            return Optional.of(savedProduct);
+        } catch (Exception e) {
+            log.error("Failed to save product: {}", e.getMessage(), e);
+            return Optional.empty();
+        }
+    }
 	@Override
 	public Optional<ProductResponseDto> getProductById(Long id) {
 
@@ -84,21 +84,79 @@ public class ProductService implements IProductService {
 	}
 
 	@Override
-	public Optional<ProductResponseDto> updateProduct(Long id, ProductRequestDto user) {
+	public Optional<ProductResponseDto> updateProduct(Long id, ProductRequestDto productRequestDto) {
 		log.debug("Attempting to update Product with id {}", id);
-
-		return Optional.empty();
+		if(getProductByIdFromRepository(id).isEmpty()){
+			return Optional.empty();
+		}
+		productRequestDto.setProductId(id);
+		return saveProductToRepository(productMapper.toProduct(productRequestDto))
+				.map(product -> {
+					log.debug("Product updated {}",product);
+					return productMapper.toDto(product);
+				});
 	}
 
 	@Override
 	public Optional<ProductResponseDto> deleteProduct(Long id) {
 		log.debug("Attempting to delete Product with id: {}", id);
-		return Optional.empty();
+		return getProductByIdFromRepository(id)
+				.map(product -> {
+					log.debug("Product Deleted: {}",product);
+					return productMapper.toDto(product);
+				});
 	}
 
 	@Override
-	public Optional<UserResponseDto> patchProduct(Long id, UserRequestDto userRequestDto) {
+	public Optional<ProductResponseDto> patchProduct(Long id, ProductRequestDto productRequestDto) {
 		log.debug("Attempting to patch Product with id {}",id);
-		return Optional.empty();
+
+
+		return getProductByIdFromRepository(id)
+					.map(product -> {
+						boolean changed = false;
+						if (hasText(productRequestDto.getName()) && !productRequestDto.getName().equals(product.getName())) {
+							product.setName(productRequestDto.getName().trim());
+							changed = true;
+						}
+						if (hasText(productRequestDto.getDescription()) && !productRequestDto.getDescription().equals(product.getDescription())) {
+							product.setDescription(productRequestDto.getDescription().trim());
+							changed = true;
+						}
+						if (productRequestDto.getPrice() != null && (product.getPrice() == null || productRequestDto.getPrice().compareTo(product.getPrice()) != 0)) {
+							product.setPrice(productRequestDto.getPrice());
+							changed = true;
+						}
+						if (productRequestDto.getStockQuantity() != null && !productRequestDto.getStockQuantity().equals(product.getStockQuantity())) {
+							product.setStockQuantity(productRequestDto.getStockQuantity());
+							changed = true;
+						}
+						if (hasText(productRequestDto.getCategory()) && !productRequestDto.getCategory().equals(product.getCategory())) {
+							product.setCategory(productRequestDto.getCategory().trim());
+							changed = true;
+						}
+						if (hasText(productRequestDto.getImageUrl()) && !productRequestDto.getImageUrl().equals(product.getImageUrl())) {
+							product.setImageUrl(productRequestDto.getImageUrl().trim());
+							changed = true;
+						}
+
+						// <- Boolean PATCH semantics: only set when provided (not null)
+						if (productRequestDto.getActive() != null && !productRequestDto.getActive().equals(product.getActive())) {
+							product.setActive(productRequestDto.getActive());
+							changed = true;
+						}
+
+						// No-op PATCH is allowed; persist only when something changed
+						if (changed) {
+							product = productRepository.save(product);
+						}
+
+						return productMapper.toDto(product);
+
+					});
+	}
+
+	private static boolean hasText(String s) {
+		return s != null && !s.trim().isEmpty();
 	}
 }
