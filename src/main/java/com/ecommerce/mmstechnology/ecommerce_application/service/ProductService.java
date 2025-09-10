@@ -73,6 +73,13 @@ public class ProductService implements IProductService {
 	}
 
 	@Override
+	public List<ProductResponseDto> getAllActiveProducts() {
+		log.debug("Attempting to retrieve all active products");
+		return productMapper.toDtoList(productRepository.findByActiveTrue());
+
+	}
+
+	@Override
 	public Optional<ProductResponseDto> createProduct(ProductRequestDto productRequestDto) {
 		log.debug("Attempting to create Product: {}", productRequestDto);
 		return saveProductToRepository(productMapper.toProduct(productRequestDto))
@@ -154,6 +161,13 @@ public class ProductService implements IProductService {
 						return productMapper.toDto(product);
 
 					});
+	}
+
+	@Override
+	public List<ProductResponseDto> searchProducts(String keyword) {
+		log.debug("Request to search products with keyword: {}",keyword);
+
+		return productMapper.toDtoList(productRepository.searchProducts(keyword));
 	}
 
 	private static boolean hasText(String s) {

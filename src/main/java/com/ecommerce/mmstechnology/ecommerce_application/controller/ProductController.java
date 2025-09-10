@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +22,7 @@ import java.util.List;
  * © 2025 mmstechnology
  */
 @RestController
-@RequestMapping("/api/v1/product")
+@RequestMapping("/api/v1/products")
 @AllArgsConstructor
 @Slf4j
 public class ProductController {
@@ -35,6 +36,13 @@ public class ProductController {
 		return new ResponseEntity<>(productService.getAllProducts(), HttpStatus.OK);
 	}
 
+	@GetMapping("/active")
+	public ResponseEntity<List<ProductResponseDto>> getAllActiveProducts(){
+		log.info("Request for getting all active products");
+		return new ResponseEntity<>(productService.getAllActiveProducts(), HttpStatus.OK);
+	}
+
+
 	@GetMapping("/{id}")
 	public ResponseEntity<ProductResponseDto> getProductById(@PathVariable(name="id")  @Min(1) Long id){
 		log.info("Request for get product with id: {}",id);
@@ -43,10 +51,14 @@ public class ProductController {
 		return productService.getProductById(id).map(productDto ->{
 				log.debug("Product Dto Response found {}",productDto);
 				return new ResponseEntity<>(productDto,HttpStatus.OK);
-			}).orElseThrow(() -> {
-				log.warn("Product with ID {} not found", id);
-				return new ResourceNotFoundException("Product not found with ID: " + id);
-			});
+			}).orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: " + id));
+	}
+
+	@GetMapping("/search/{keyword}")
+	public ResponseEntity<List<ProductResponseDto>> searchProducts(@PathVariable(name="keyword") String keyword){
+		log.info("Request to search products with keyword: {}",keyword);
+		return new ResponseEntity<>(productService.searchProducts(keyword),HttpStatus.OK);
+
 	}
 
 	@PostMapping()
@@ -61,7 +73,6 @@ public class ProductController {
 							log.warn("Product creation failed for request: {}", productRequestDto);
 							return new ProductCreationException("Unable to create the product.");
 						}
-
 				);
 	}
 
@@ -75,7 +86,6 @@ public class ProductController {
 					return new ResponseEntity<>(productResponseDto,HttpStatus.OK);
 				})
 				.orElseThrow(()->{
-					log.warn("Product with ID {} not found", productId);
 					return new ResourceNotFoundException("Product not found with ID: {}" + productId);
 				}
 				);
@@ -93,9 +103,24 @@ public class ProductController {
 				})
 				.orElseThrow(() -> {
 
-					return new ResourceNotFoundException("Product not found with ID: {}" + productId);
+					return new ResourceNotFoundException("Product not found with ID: " + productId);
 				});
 	}
+
+	@PutMapping("/{productId}")
+	public ResponseEntity<ProductResponseDto> updateProductById(@PathVariable(name="productId") @Min(1) Long productId,@RequestBody ProductRequestDto productRequestDto){
+		log.info("Request to update Product with id: {}", productId);
+
+		return productService.updateProduct(productId, productRequestDto)
+				.map(productResponseDto -> {
+					log.debug("Product updated: {}", productResponseDto);
+					return new ResponseEntity<>(productResponseDto, HttpStatus.OK);
+				})
+				.orElseThrow(()-> {
+					return new ResourceNotFoundException("Product not found with ID: " + productId);
+				});
+	}
+
 
 
 }

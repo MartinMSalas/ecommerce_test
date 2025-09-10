@@ -19,6 +19,8 @@ public interface IProductService {
 
 	public List<ProductResponseDto> getAllProducts();
 
+	public List<ProductResponseDto> getAllActiveProducts();
+
 	public Optional<ProductResponseDto> createProduct(ProductRequestDto user);
 
 	public Optional<ProductResponseDto> updateProduct(Long id, ProductRequestDto user);
@@ -27,4 +29,5 @@ public interface IProductService {
 
 	public Optional<ProductResponseDto> patchProduct(Long id, ProductRequestDto productRequestDto);
 
+	public List<ProductResponseDto> searchProducts(String keyword);
 }
