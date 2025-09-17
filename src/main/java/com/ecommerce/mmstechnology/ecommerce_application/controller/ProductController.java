@@ -22,7 +22,7 @@ import java.util.List;
  * © 2025 mmstechnology
  */
 @RestController
-@RequestMapping("/api/v1/products")
+@RequestMapping("/api/v1/product")
 @AllArgsConstructor
 @Slf4j
 public class ProductController {
@@ -54,8 +54,8 @@ public class ProductController {
 			}).orElseThrow(() -> new ResourceNotFoundException("Product not found with ID: " + id));
 	}
 
-	@GetMapping("/search/{keyword}")
-	public ResponseEntity<List<ProductResponseDto>> searchProducts(@PathVariable(name="keyword") String keyword){
+	@GetMapping("/search")
+	public ResponseEntity<List<ProductResponseDto>> searchProducts(@RequestParam("name") String keyword){
 		log.info("Request to search products with keyword: {}",keyword);
 		return new ResponseEntity<>(productService.searchProducts(keyword),HttpStatus.OK);
 
