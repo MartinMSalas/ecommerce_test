@@ -12,7 +12,6 @@ import java.time.LocalDateTime;
 @Entity
 @Data
 @ToString(exclude = {"user", "product"})
-
 public class CartItem {
 
     @Id

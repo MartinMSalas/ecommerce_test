@@ -19,6 +19,10 @@ public interface UserMapper {
 	UserResponseDto toDto(User user);
 	@Mapping(target = "address", source = "addressDto")  // <— connect different names/types
 	User toUser(UserRequestDto userRequestDto);
+
+	@Mapping(target = "address", source = "addressDto")  // <— connect different names/types
+	User toUserFromResponse(UserResponseDto userRequestDto);
+
 	List<UserResponseDto> toDtoList(List<User> users);
 
 
